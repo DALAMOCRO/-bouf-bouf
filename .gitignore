@@ -1,0 +1,16 @@
+.env
+.env.*
+!.env.example
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.venv/
+android/.gradle/
+android/**/build/
+*.keystore
+*.jks
+
+# Android Studio
+android/.idea/
+android/local.properties
