@@ -32,6 +32,9 @@ android {
 }
 
 dependencies {
+    implementation(libs.retrofit)
+    implementation(libs.retrofit.converter.gson)
+    implementation(libs.okhttp.logging)
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime)
     implementation(libs.androidx.lifecycle.runtime.compose)
@@ -45,6 +48,7 @@ dependencies {
     implementation(libs.compose.ui.tooling.preview)
     implementation(libs.compose.material3)
     implementation(libs.compose.material.icons)
+    
 
     testImplementation(libs.junit)
     testImplementation(libs.coroutines.test)

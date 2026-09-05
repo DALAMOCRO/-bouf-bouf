@@ -3,8 +3,8 @@ package com.boufbouf.app.feature.feed
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.boufbouf.app.core.model.FeedVideo
+import com.boufbouf.app.feature.feed.data.ApiFeedRepository
 import com.boufbouf.app.feature.feed.data.FeedRepository
-import com.boufbouf.app.feature.feed.data.MockFeedRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -19,8 +19,7 @@ data class FeedUiState(
     val savedIds: Set<String> = emptySet(),
     val isLoading: Boolean = true,
 )
-
-class FeedViewModel(private val repository: FeedRepository = MockFeedRepository()) : ViewModel() {
+class FeedViewModel(private val repository: FeedRepository = ApiFeedRepository()) : ViewModel() {
     private val _uiState = MutableStateFlow(FeedUiState())
     val uiState: StateFlow<FeedUiState> = _uiState.asStateFlow()
 
@@ -34,9 +33,33 @@ class FeedViewModel(private val repository: FeedRepository = MockFeedRepository(
     fun toggleSave(id: String) = updateIds(id, isLike = false)
 
     private fun load(tab: FeedTab) = viewModelScope.launch {
-        _uiState.value = _uiState.value.copy(selectedTab = tab, isLoading = true)
-        val videos = if (tab == FeedTab.FOR_YOU) repository.getForYou() else repository.getFollowing()
-        _uiState.value = _uiState.value.copy(videos = videos, isLoading = false)
+        _uiState.value = _uiState.value.copy(
+            selectedTab = tab,
+            isLoading = true,
+        )
+
+        try {
+            val videos = if (tab == FeedTab.FOR_YOU) {
+                repository.getForYou()
+            } else {
+                repository.getFollowing()
+            }
+
+            println("BOUF-BOUF DEBUG: ${videos.size} vidéos chargées")
+            println("BOUF-BOUF DEBUG: ${videos.map { it.creatorName }}")
+
+            _uiState.value = _uiState.value.copy(
+                videos = videos,
+                isLoading = false,
+            )
+        } catch (e: Exception) {
+            println("BOUF-BOUF ERROR: ${e.message}")
+
+            _uiState.value = _uiState.value.copy(
+                videos = emptyList(),
+                isLoading = false,
+            )
+        }
     }
 
     private fun updateIds(id: String, isLike: Boolean) {

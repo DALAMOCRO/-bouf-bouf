@@ -42,6 +42,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.zIndex
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.boufbouf.app.core.model.FeedVideo
 import com.boufbouf.app.feature.feed.FeedTab
@@ -68,7 +69,6 @@ fun FeedRoute(
         onProfileClick = onProfileClick,
     )
 }
-
 
 @Composable
 fun FeedScreen(
@@ -118,7 +118,8 @@ fun FeedScreen(
             onSelected = onTabSelected,
             modifier = Modifier
                 .align(Alignment.TopCenter)
-                .padding(top = 18.dp),
+                .padding(top = 18.dp)
+                .zIndex(10f),
         )
     }
 }
@@ -133,14 +134,20 @@ private fun FeedPager(
     onProfileClick: (String) -> Unit,
     videoPlaybackEnabled: Boolean,
 ) {
-    val pagerState = rememberPagerState(pageCount = { state.videos.size })
+    val pagerState = rememberPagerState(
+        pageCount = { state.videos.size }
+    )
+
     VerticalPager(
         state = pagerState,
-        modifier = Modifier.fillMaxSize().testTag("feed_pager"),
+        modifier = Modifier
+            .fillMaxSize()
+            .testTag("feed_pager"),
         beyondViewportPageCount = 1,
         key = { state.videos[it].id },
     ) { page ->
         val isVisible = pagerState.currentPage == page
+
         FeedVideoCard(
             video = state.videos[page],
             isVisible = isVisible && videoPlaybackEnabled,
@@ -156,19 +163,46 @@ private fun FeedPager(
 }
 
 @Composable
-private fun FeedTabs(selected: FeedTab, onSelected: (FeedTab) -> Unit, modifier: Modifier = Modifier) {
-    Row(modifier = modifier, verticalAlignment = Alignment.CenterVertically) {
+private fun FeedTabs(
+    selected: FeedTab,
+    onSelected: (FeedTab) -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    Row(
+        modifier = modifier
+            .background(Color.Black.copy(alpha = 0.25f)),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
         FeedTab.entries.forEach { tab ->
             val isSelected = tab == selected
+
             Text(
-                text = if (tab == FeedTab.FOR_YOU) "POUR VOUS" else "ABONNEMENTS",
-                color = if (isSelected) Color.White else Color.White.copy(alpha = .62f),
-                fontWeight = if (isSelected) FontWeight.ExtraBold else FontWeight.Medium,
+                text = if (tab == FeedTab.FOR_YOU) {
+                    "POUR VOUS"
+                } else {
+                    "ABONNEMENTS"
+                },
+                color = if (isSelected) {
+                    Color.White
+                } else {
+                    Color.White.copy(alpha = .62f)
+                },
+                fontWeight = if (isSelected) {
+                    FontWeight.ExtraBold
+                } else {
+                    FontWeight.Medium
+                },
                 fontSize = 14.sp,
                 modifier = Modifier
                     .testTag("tab_${tab.name}")
-                    .padding(horizontal = 12.dp, vertical = 10.dp)
-                    .clickableNoIndication { onSelected(tab) },
+                    .padding(
+                        horizontal = 12.dp,
+                        vertical = 10.dp,
+                    )
+                    .clickableNoIndication {
+                        println("BOUF-BOUF TAB CLICK: $tab")
+                        onSelected(tab)
+                    },
             )
         }
     }
@@ -210,6 +244,7 @@ private fun FeedVideoCard(
                             Color(0xE01E1712),
                         )
                     )
+
                     onDrawBehind {
                         drawRect(gradient)
                     }
@@ -332,10 +367,22 @@ private fun ActionColumn(
         verticalArrangement = Arrangement.spacedBy(10.dp),
     ) {
         ActionButton(
-            icon = if (isLiked) Icons.Default.Favorite else Icons.Default.FavoriteBorder,
-            description = if (isLiked) "Retirer le j’aime" else "J’aime",
+            icon = if (isLiked) {
+                Icons.Default.Favorite
+            } else {
+                Icons.Default.FavoriteBorder
+            },
+            description = if (isLiked) {
+                "Retirer le j’aime"
+            } else {
+                "J’aime"
+            },
             onClick = onLikeClick,
-            tint = if (isLiked) MaterialTheme.colorScheme.primary else Color.White,
+            tint = if (isLiked) {
+                MaterialTheme.colorScheme.primary
+            } else {
+                Color.White
+            },
         )
 
         Text(
@@ -358,8 +405,16 @@ private fun ActionColumn(
         )
 
         ActionButton(
-            icon = if (isSaved) Icons.Default.Bookmark else Icons.Default.BookmarkBorder,
-            description = if (isSaved) "Retirer des sauvegardes" else "Sauvegarder",
+            icon = if (isSaved) {
+                Icons.Default.Bookmark
+            } else {
+                Icons.Default.BookmarkBorder
+            },
+            description = if (isSaved) {
+                "Retirer des sauvegardes"
+            } else {
+                "Sauvegarder"
+            },
             onClick = onSaveClick,
             tint = Color.White,
         )
@@ -394,25 +449,52 @@ private fun ActionButton(
 }
 
 @Composable
-private fun Avatar(name: String, color: Color) {
-    Box(modifier = Modifier.size(34.dp).background(color, CircleShape), contentAlignment = Alignment.Center) {
-        Text(name.take(1).uppercase(), color = Color.White, fontWeight = FontWeight.Bold)
+private fun Avatar(
+    name: String,
+    color: Color,
+) {
+    Box(
+        modifier = Modifier
+            .size(34.dp)
+            .background(color, CircleShape),
+        contentAlignment = Alignment.Center,
+    ) {
+        Text(
+            name.take(1).uppercase(),
+            color = Color.White,
+            fontWeight = FontWeight.Bold,
+        )
     }
 }
 
-private fun compactNumber(value: Int): String = if (value >= 1000) {
-    String.format(Locale.FRANCE, "%.1fk", value / 1000f).replace(",", ".")
-} else value.toString()
+private fun compactNumber(value: Int): String =
+    if (value >= 1000) {
+        String.format(
+            Locale.FRANCE,
+            "%.1fk",
+            value / 1000f,
+        ).replace(",", ".")
+    } else {
+        value.toString()
+    }
 
-private fun Modifier.clickableNoIndication(onClick: () -> Unit): Modifier =
+private fun Modifier.clickableNoIndication(
+    onClick: () -> Unit,
+): Modifier =
     this.clickable(onClick = onClick)
 
-private fun shareVideo(context: Context, video: FeedVideo) {
+private fun shareVideo(
+    context: Context,
+    video: FeedVideo,
+) {
     context.startActivity(
         Intent.createChooser(
             Intent(Intent.ACTION_SEND).apply {
                 type = "text/plain"
-                putExtra(Intent.EXTRA_TEXT, "${video.description} — Bouf-Bouf")
+                putExtra(
+                    Intent.EXTRA_TEXT,
+                    "${video.description} — Bouf-Bouf",
+                )
             },
             "Partager une idée cuisine",
         ),

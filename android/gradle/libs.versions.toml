@@ -10,8 +10,13 @@ coroutines = "1.9.0"
 junit = "4.13.2"
 androidxJunit = "1.2.1"
 espresso = "3.6.1"
+retrofit = "2.11.0"
+okhttp = "4.12.0"
 
 [libraries]
+okhttp-logging = { module = "com.squareup.okhttp3:logging-interceptor", version.ref = "okhttp" }
+retrofit = { module = "com.squareup.retrofit2:retrofit", version.ref = "retrofit" }
+retrofit-converter-gson = { module = "com.squareup.retrofit2:converter-gson", version.ref = "retrofit" }
 androidx-core-ktx = { module = "androidx.core:core-ktx", version = "1.15.0" }
 androidx-lifecycle-runtime = { module = "androidx.lifecycle:lifecycle-runtime-ktx", version.ref = "lifecycle" }
 androidx-lifecycle-runtime-compose = { module = "androidx.lifecycle:lifecycle-runtime-compose", version.ref = "lifecycle" }

@@ -5,6 +5,7 @@
         android:allowBackup="false"
         android:label="Bouf-Bouf"
         android:supportsRtl="true"
+        android:usesCleartextTraffic="true"
         android:theme="@style/Theme.BoufBouf">
         <activity
             android:name=".MainActivity"
