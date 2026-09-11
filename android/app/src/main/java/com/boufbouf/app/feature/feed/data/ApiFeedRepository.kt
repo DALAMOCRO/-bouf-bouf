@@ -11,14 +11,14 @@ class ApiFeedRepository : FeedRepository {
         return response.videos.map { dto ->
             FeedVideo(
                 id = dto.id,
-                videoUrl = "https://storage.googleapis.com/exoplayer-test-media-1/gen-3/screens/dash-vod-single-segment/video-avc-baseline-480.mp4",
+                videoUrl = dto.videoUrl,
                 creatorName = dto.creatorName,
                 creatorHandle = dto.creatorHandle,
                 description = dto.description,
                 hashtags = dto.hashtags,
                 ingredientsPreview = emptyList(),
-                likes = 0,
-                comments = 0,
+                likes = dto.likes,
+                comments = dto.comments,
                 recipe = null,
                 accentColor = 0xFFC66A35,
             )

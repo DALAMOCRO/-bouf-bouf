@@ -48,6 +48,8 @@ dependencies {
     implementation(libs.compose.ui.tooling.preview)
     implementation(libs.compose.material3)
     implementation(libs.compose.material.icons)
+    implementation("androidx.datastore:datastore-preferences:1.1.7")
+    
     
 
     testImplementation(libs.junit)

@@ -14,3 +14,8 @@ android/**/build/
 # Android Studio
 android/.idea/
 android/local.properties
+
+# Generated artifacts
+*.zip
+diff_complet.txt
+outputs/

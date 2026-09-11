@@ -9,5 +9,8 @@ data class FeedVideoDto(
     val creatorName: String,
     val creatorHandle: String,
     val description: String,
-    val hashtags: List<String>
+    val hashtags: List<String>,
+    val videoUrl: String,
+    val likes: Int,
+    val comments: Int,
 )
