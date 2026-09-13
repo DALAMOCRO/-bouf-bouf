@@ -20,6 +20,10 @@ class AuthViewModelFactory(
             return AuthViewModel(repository) as T
         }
 
+        if (modelClass.isAssignableFrom(RegisterViewModel::class.java)) {
+            return RegisterViewModel(repository) as T
+        }
+
         throw IllegalArgumentException(
             "Unknown ViewModel class: ${modelClass.name}"
         )

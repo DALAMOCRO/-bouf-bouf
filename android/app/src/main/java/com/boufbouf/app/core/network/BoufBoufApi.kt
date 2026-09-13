@@ -14,6 +14,11 @@ interface BoufBoufApi {
         @Body request: LoginRequest
     ): TokenResponse
 
+    @POST("api/v1/auth/register")
+    suspend fun register(
+        @Body request: RegisterRequest
+    ): UserResponse
+
     @GET("api/v1/auth/me")
     suspend fun getMe(): UserResponse
 }

@@ -1,4 +1,4 @@
-package com.boufbouf.app.feature.auth.ui
+﻿package com.boufbouf.app.feature.auth.ui
 
 import android.content.Context
 import androidx.compose.foundation.background
@@ -10,10 +10,14 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Email
 import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material.icons.filled.Person
+import androidx.compose.material.icons.filled.Phone
 import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.material3.Button
@@ -40,31 +44,31 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.boufbouf.app.core.ui.BoufBoufOrange
-import com.boufbouf.app.feature.auth.AuthViewModel
 import com.boufbouf.app.feature.auth.AuthViewModelFactory
+import com.boufbouf.app.feature.auth.RegisterViewModel
 
 @Composable
-fun LoginRoute(
+fun RegisterRoute(
     context: Context,
-    onLoginSuccess: () -> Unit,
-    onRegisterClick: () -> Unit,
+    onRegisterSuccess: () -> Unit,
+    onBackToLogin: () -> Unit,
 ) {
-    val viewModel: AuthViewModel = viewModel(
+    val viewModel: RegisterViewModel = viewModel(
         factory = AuthViewModelFactory(context)
     )
 
-    LoginScreen(
+    RegisterScreen(
         viewModel = viewModel,
-        onLoginSuccess = onLoginSuccess,
-        onRegisterClick = onRegisterClick,
+        onRegisterSuccess = onRegisterSuccess,
+        onBackToLogin = onBackToLogin,
     )
 }
 
 @Composable
-fun LoginScreen(
-    viewModel: AuthViewModel,
-    onLoginSuccess: () -> Unit,
-    onRegisterClick: () -> Unit,
+fun RegisterScreen(
+    viewModel: RegisterViewModel,
+    onRegisterSuccess: () -> Unit,
+    onBackToLogin: () -> Unit,
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
@@ -72,8 +76,12 @@ fun LoginScreen(
         mutableStateOf(false)
     }
 
-    if (uiState.isLoggedIn) {
-        onLoginSuccess()
+    var confirmPasswordVisible by remember {
+        mutableStateOf(false)
+    }
+
+    if (uiState.isRegistered) {
+        onRegisterSuccess()
         return
     }
 
@@ -81,13 +89,14 @@ fun LoginScreen(
         modifier = Modifier
             .fillMaxSize()
             .background(MaterialTheme.colorScheme.background)
-            .padding(horizontal = 24.dp),
-        contentAlignment = Alignment.Center,
     ) {
         Column(
-            modifier = Modifier.fillMaxWidth(),
-            verticalArrangement = Arrangement.Center,
+            modifier = Modifier
+                .fillMaxSize()
+                .verticalScroll(rememberScrollState())
+                .padding(horizontal = 24.dp, vertical = 32.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Top,
         ) {
             Text(
                 text = "BOUF-BOUF",
@@ -99,7 +108,7 @@ fun LoginScreen(
             Spacer(modifier = Modifier.height(8.dp))
 
             Text(
-                text = "Bon retour !",
+                text = "Rejoins la communauté",
                 style = MaterialTheme.typography.headlineMedium,
                 fontWeight = FontWeight.Bold,
             )
@@ -107,24 +116,22 @@ fun LoginScreen(
             Spacer(modifier = Modifier.height(6.dp))
 
             Text(
-                text = "Connecte-toi pour continuer à partager\nla passion de la bonne cuisine.",
+                text = "Crée ton compte et partage ta passion\npour la bonne cuisine.",
                 color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.7f),
                 style = MaterialTheme.typography.bodyMedium,
             )
 
-            Spacer(modifier = Modifier.height(32.dp))
+            Spacer(modifier = Modifier.height(28.dp))
 
             OutlinedTextField(
-                value = uiState.emailOrPhone,
-                onValueChange = viewModel::updateEmailOrPhone,
+                value = uiState.username,
+                onValueChange = viewModel::updateUsername,
                 modifier = Modifier.fillMaxWidth(),
-                label = {
-                    Text("Email ou numéro de téléphone")
-                },
+                label = { Text("Nom d'utilisateur") },
                 leadingIcon = {
                     Icon(
                         imageVector = Icons.Default.Person,
-                        contentDescription = "Email ou téléphone",
+                        contentDescription = "Nom d'utilisateur",
                     )
                 },
                 singleLine = true,
@@ -132,15 +139,67 @@ fun LoginScreen(
                 enabled = !uiState.isLoading,
             )
 
-            Spacer(modifier = Modifier.height(14.dp))
+            Spacer(modifier = Modifier.height(12.dp))
+
+            OutlinedTextField(
+                value = uiState.email,
+                onValueChange = viewModel::updateEmail,
+                modifier = Modifier.fillMaxWidth(),
+                label = { Text("Email") },
+                leadingIcon = {
+                    Icon(
+                        imageVector = Icons.Default.Email,
+                        contentDescription = "Email",
+                    )
+                },
+                singleLine = true,
+                shape = RoundedCornerShape(16.dp),
+                enabled = !uiState.isLoading,
+            )
+
+            Spacer(modifier = Modifier.height(12.dp))
+
+            OutlinedTextField(
+                value = uiState.phoneNumber,
+                onValueChange = viewModel::updatePhoneNumber,
+                modifier = Modifier.fillMaxWidth(),
+                label = { Text("Téléphone (optionnel)") },
+                leadingIcon = {
+                    Icon(
+                        imageVector = Icons.Default.Phone,
+                        contentDescription = "Téléphone",
+                    )
+                },
+                singleLine = true,
+                shape = RoundedCornerShape(16.dp),
+                enabled = !uiState.isLoading,
+            )
+
+            Spacer(modifier = Modifier.height(12.dp))
+
+            OutlinedTextField(
+                value = uiState.displayName,
+                onValueChange = viewModel::updateDisplayName,
+                modifier = Modifier.fillMaxWidth(),
+                label = { Text("Nom affiché") },
+                leadingIcon = {
+                    Icon(
+                        imageVector = Icons.Default.Person,
+                        contentDescription = "Nom affiché",
+                    )
+                },
+                singleLine = true,
+                shape = RoundedCornerShape(16.dp),
+                enabled = !uiState.isLoading,
+            )
+
+            Spacer(modifier = Modifier.height(12.dp))
 
             OutlinedTextField(
                 value = uiState.password,
                 onValueChange = viewModel::updatePassword,
                 modifier = Modifier.fillMaxWidth(),
-                label = {
-                    Text("Mot de passe")
-                },
+                label = { Text("Mot de passe") },
                 leadingIcon = {
                     Icon(
                         imageVector = Icons.Default.Lock,
@@ -177,7 +236,62 @@ fun LoginScreen(
                 enabled = !uiState.isLoading,
             )
 
-            Spacer(modifier = Modifier.height(10.dp))
+            Spacer(modifier = Modifier.height(12.dp))
+
+            OutlinedTextField(
+                value = uiState.confirmPassword,
+                onValueChange = viewModel::updateConfirmPassword,
+                modifier = Modifier.fillMaxWidth(),
+                label = { Text("Confirmer le mot de passe") },
+                leadingIcon = {
+                    Icon(
+                        imageVector = Icons.Default.Lock,
+                        contentDescription = "Confirmation du mot de passe",
+                    )
+                },
+                trailingIcon = {
+                    IconButton(
+                        onClick = {
+                            confirmPasswordVisible = !confirmPasswordVisible
+                        }
+                    ) {
+                        Icon(
+                            imageVector = if (confirmPasswordVisible) {
+                                Icons.Default.VisibilityOff
+                            } else {
+                                Icons.Default.Visibility
+                            },
+                            contentDescription = if (confirmPasswordVisible) {
+                                "Masquer le mot de passe"
+                            } else {
+                                "Afficher le mot de passe"
+                            },
+                        )
+                    }
+                },
+                visualTransformation = if (confirmPasswordVisible) {
+                    VisualTransformation.None
+                } else {
+                    PasswordVisualTransformation()
+                },
+                singleLine = true,
+                shape = RoundedCornerShape(16.dp),
+                enabled = !uiState.isLoading,
+            )
+
+            Spacer(modifier = Modifier.height(12.dp))
+
+            OutlinedTextField(
+                value = uiState.country,
+                onValueChange = viewModel::updateCountry,
+                modifier = Modifier.fillMaxWidth(),
+                label = { Text("Pays") },
+                singleLine = true,
+                shape = RoundedCornerShape(16.dp),
+                enabled = !uiState.isLoading,
+            )
+
+            Spacer(modifier = Modifier.height(16.dp))
 
             uiState.errorMessage?.let { message ->
                 Text(
@@ -188,12 +302,12 @@ fun LoginScreen(
                         .fillMaxWidth()
                         .padding(horizontal = 4.dp),
                 )
+
+                Spacer(modifier = Modifier.height(12.dp))
             }
 
-            Spacer(modifier = Modifier.height(20.dp))
-
             Button(
-                onClick = viewModel::login,
+                onClick = viewModel::register,
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(56.dp),
@@ -212,22 +326,20 @@ fun LoginScreen(
                     )
                 } else {
                     Text(
-                        text = "SE CONNECTER",
+                        text = "CRÉER MON COMPTE",
                         fontWeight = FontWeight.Bold,
                     )
                 }
             }
 
-            Spacer(modifier = Modifier.height(18.dp))
+            Spacer(modifier = Modifier.height(12.dp))
 
             TextButton(
-                onClick = onRegisterClick,
+                onClick = onBackToLogin,
                 enabled = !uiState.isLoading,
             ) {
-                Text("Créer un compte")
+                Text("J'ai déjà un compte")
             }
         }
     }
 }
-
-

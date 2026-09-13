@@ -2,11 +2,11 @@
 
 import android.content.Context
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.boufbouf.app.feature.auth.ui.LoginRoute
+import com.boufbouf.app.feature.auth.ui.RegisterRoute
 import com.boufbouf.app.feature.comments.ui.CommentsRoute
 import com.boufbouf.app.feature.feed.ui.FeedRoute
 import com.boufbouf.app.feature.profile.ui.ProfileRoute
@@ -14,6 +14,7 @@ import com.boufbouf.app.feature.recipe.ui.RecipeRoute
 
 private object Destinations {
     const val LOGIN = "login"
+    const val REGISTER = "register"
     const val FEED = "feed"
     const val RECIPE = "recipe/{videoId}"
     const val COMMENTS = "comments/{videoId}"
@@ -45,6 +46,25 @@ fun BoufBoufApp(
                             inclusive = true
                         }
                     }
+                },
+                onRegisterClick = {
+                    navController.navigate(Destinations.REGISTER)
+                },
+            )
+        }
+
+        composable(Destinations.REGISTER) {
+            RegisterRoute(
+                context = context,
+                onRegisterSuccess = {
+                    navController.navigate(Destinations.FEED) {
+                        popUpTo(Destinations.LOGIN) {
+                            inclusive = true
+                        }
+                    }
+                },
+                onBackToLogin = {
+                    navController.popBackStack()
                 },
             )
         }
