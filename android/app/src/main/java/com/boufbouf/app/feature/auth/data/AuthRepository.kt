@@ -5,6 +5,7 @@ import com.boufbouf.app.core.network.RegisterRequest
 import com.boufbouf.app.core.network.RetrofitClient
 import com.boufbouf.app.core.network.UserResponse
 import com.boufbouf.app.core.storage.TokenStorage
+import kotlinx.coroutines.flow.first
 
 class AuthRepository(
     private val tokenStorage: TokenStorage
@@ -48,5 +49,13 @@ class AuthRepository(
 
     suspend fun getCurrentUser(): UserResponse {
         return RetrofitClient.api.getMe()
+    }
+
+    suspend fun getStoredToken(): String? {
+        return tokenStorage.token.first()
+    }
+
+    suspend fun clearToken() {
+        tokenStorage.clearToken()
     }
 }

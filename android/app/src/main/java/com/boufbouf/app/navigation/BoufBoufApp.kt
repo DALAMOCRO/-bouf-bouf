@@ -1,10 +1,23 @@
-﻿package com.boufbouf.app.navigation
+package com.boufbouf.app.navigation
 
 import android.content.Context
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.boufbouf.app.core.ui.BoufBoufOrange
+import com.boufbouf.app.feature.auth.AuthViewModelFactory
+import com.boufbouf.app.feature.auth.SessionStatus
+import com.boufbouf.app.feature.auth.SessionViewModel
 import com.boufbouf.app.feature.auth.ui.LoginRoute
 import com.boufbouf.app.feature.auth.ui.RegisterRoute
 import com.boufbouf.app.feature.comments.ui.CommentsRoute
@@ -30,11 +43,54 @@ private object Destinations {
 fun BoufBoufApp(
     context: Context,
 ) {
+    val sessionViewModel: SessionViewModel = viewModel(
+        factory = AuthViewModelFactory(context)
+    )
+
+    val sessionStatus by sessionViewModel.status.collectAsStateWithLifecycle()
+
+    LaunchedEffect(Unit) {
+        sessionViewModel.checkSession()
+    }
+
+    when (sessionStatus) {
+        SessionStatus.CHECKING -> {
+            Box(
+                modifier = Modifier.fillMaxSize(),
+                contentAlignment = Alignment.Center
+            ) {
+                CircularProgressIndicator(
+                    color = BoufBoufOrange
+                )
+            }
+        }
+
+        SessionStatus.AUTHENTICATED -> {
+            BoufBoufNavHost(
+                context = context,
+                startDestination = Destinations.FEED,
+            )
+        }
+
+        SessionStatus.UNAUTHENTICATED -> {
+            BoufBoufNavHost(
+                context = context,
+                startDestination = Destinations.LOGIN,
+            )
+        }
+    }
+}
+
+@Composable
+private fun BoufBoufNavHost(
+    context: Context,
+    startDestination: String,
+) {
     val navController = rememberNavController()
 
     NavHost(
         navController = navController,
-        startDestination = Destinations.LOGIN,
+        startDestination = startDestination,
     ) {
 
         composable(Destinations.LOGIN) {

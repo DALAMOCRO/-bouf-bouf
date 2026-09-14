@@ -2,6 +2,7 @@
 
 import android.content.Context
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -15,6 +16,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Email
+import androidx.compose.material.icons.filled.Language
 import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Phone
@@ -23,6 +25,8 @@ import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -77,6 +81,10 @@ fun RegisterScreen(
     }
 
     var confirmPasswordVisible by remember {
+        mutableStateOf(false)
+    }
+
+    var languageMenuExpanded by remember {
         mutableStateOf(false)
     }
 
@@ -290,6 +298,87 @@ fun RegisterScreen(
                 shape = RoundedCornerShape(16.dp),
                 enabled = !uiState.isLoading,
             )
+
+            Spacer(modifier = Modifier.height(12.dp))
+
+            Box(
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                OutlinedTextField(
+                    value = when (uiState.language) {
+                        "fr" -> "Français"
+                        "en" -> "English"
+                        "ar" -> "العربية"
+                        "es" -> "Español"
+                        else -> uiState.language
+                    },
+                    onValueChange = {},
+                    modifier = Modifier.fillMaxWidth(),
+                    label = { Text("Langue") },
+                    leadingIcon = {
+                        Icon(
+                            imageVector = Icons.Default.Language,
+                            contentDescription = "Langue",
+                        )
+                    },
+                    readOnly = true,
+                    singleLine = true,
+                    shape = RoundedCornerShape(16.dp),
+                    enabled = !uiState.isLoading,
+                )
+
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(64.dp)
+                        .clickable(
+                            enabled = !uiState.isLoading,
+                            onClick = {
+                                languageMenuExpanded = true
+                            }
+                        )
+                )
+
+                DropdownMenu(
+                    expanded = languageMenuExpanded,
+                    onDismissRequest = {
+                        languageMenuExpanded = false
+                    },
+                    modifier = Modifier.fillMaxWidth(0.88f),
+                ) {
+                    DropdownMenuItem(
+                        text = { Text("🇫🇷 Français") },
+                        onClick = {
+                            viewModel.updateLanguage("fr")
+                            languageMenuExpanded = false
+                        },
+                    )
+
+                    DropdownMenuItem(
+                        text = { Text("🇬🇧 English") },
+                        onClick = {
+                            viewModel.updateLanguage("en")
+                            languageMenuExpanded = false
+                        },
+                    )
+
+                    DropdownMenuItem(
+                        text = { Text("🇲🇦 العربية") },
+                        onClick = {
+                            viewModel.updateLanguage("ar")
+                            languageMenuExpanded = false
+                        },
+                    )
+
+                    DropdownMenuItem(
+                        text = { Text("🇪🇸 Español") },
+                        onClick = {
+                            viewModel.updateLanguage("es")
+                            languageMenuExpanded = false
+                        },
+                    )
+                }
+            }
 
             Spacer(modifier = Modifier.height(16.dp))
 

@@ -1,4 +1,4 @@
-﻿package com.boufbouf.app.feature.auth
+package com.boufbouf.app.feature.auth
 
 import android.content.Context
 import androidx.lifecycle.ViewModel
@@ -22,6 +22,10 @@ class AuthViewModelFactory(
 
         if (modelClass.isAssignableFrom(RegisterViewModel::class.java)) {
             return RegisterViewModel(repository) as T
+        }
+
+        if (modelClass.isAssignableFrom(SessionViewModel::class.java)) {
+            return SessionViewModel(repository) as T
         }
 
         throw IllegalArgumentException(

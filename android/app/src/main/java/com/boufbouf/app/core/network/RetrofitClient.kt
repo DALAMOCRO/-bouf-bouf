@@ -1,4 +1,4 @@
-﻿package com.boufbouf.app.core.network
+package com.boufbouf.app.core.network
 
 import android.content.Context
 import com.boufbouf.app.core.storage.TokenStorage
@@ -8,7 +8,7 @@ import retrofit2.converter.gson.GsonConverterFactory
 
 object RetrofitClient {
 
-    private const val BASE_URL = "http://192.168.100.141:8000/"
+    private const val BASE_URL = "http://192.168.100.250:8000/"
 
     private lateinit var tokenStorage: TokenStorage
 
